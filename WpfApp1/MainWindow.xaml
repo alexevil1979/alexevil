@@ -1,0 +1,45 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Button Content="Записать" HorizontalAlignment="Left" Margin="10,63,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <TextBox x:Name="textb1" HorizontalAlignment="Left" Height="133" Margin="354,129,0,0" TextWrapping="Wrap" Text="тик" VerticalAlignment="Top" Width="333" TextChanged="TextBox_TextChanged"/>
+        <TextBox Name="folder" HorizontalAlignment="Left" Height="23" Margin="220,10,0,0" TextWrapping="Wrap" Text="папка" VerticalAlignment="Top" Width="385" TextChanged="TextBox_TextChanged_1"/>
+        <Button Name="buttonFolder" Content="Button" HorizontalAlignment="Left" Height="23" Margin="632,10,0,0" VerticalAlignment="Top" Width="55"/>
+        <Label Name="fileName" RenderTransformOrigin="0.287,0.542" Margin="36,264,596.309,118.527" >
+
+
+        </Label>
+        <TextBlock  Name="lastDateTime" HorizontalAlignment="Left" Height="32" Margin="220,267,0,0" TextWrapping="Wrap" Text="время записи" VerticalAlignment="Top" Width="467"/>
+        <TextBlock  Name="count" HorizontalAlignment="Left" Height="19" Margin="218,310,0,0" TextWrapping="Wrap" Text="колво" VerticalAlignment="Top" Width="469"/>
+        <TextBlock  Name="fileSize"  HorizontalAlignment="Left" Height="17" Margin="218,339,0,0" TextWrapping="Wrap" Text="размер" VerticalAlignment="Top" Width="469"/>
+        <TextBlock  Name="status" TextWrapping="Wrap" Text="статус" RenderTransformOrigin="1.777,1.471" Margin="218,356,125.309,38.527"/>
+        <Button  Name="buttonRec" Content="Запись" Height="33" Width="106" RenderTransformOrigin="0.306,1.623" Margin="36,330,651.309,58.527"/>
+        <Grid Margin="44,154,498.309,155.527">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <CheckBox Grid.Row="0" Grid.Column="0" x:Name="writeStock" Content="Биржевой стакан" IsChecked="True" />
+            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="writeTicks" Content="Ленту сделок" IsChecked="True" />
+            <CheckBox Grid.Row="1" Grid.Column="0" x:Name="writeOrders" Content="Свои заявки" IsChecked="True" />
+            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="writeTrades" Content="Свои сделки" IsChecked="True" />
+            <CheckBox Grid.Row="2" Grid.Column="0" x:Name="writeGuide" Content="Тики поводыря" IsChecked="True" />
+            <CheckBox Grid.Row="2" Grid.Column="1" x:Name="writeTone" Content="Тики настроения" IsChecked="True" />
+            <CheckBox Grid.Row="3" Grid.Column="0" x:Name="writeMsgs" Content="Сообщения" IsChecked="True" />
+        </Grid>
+    </Grid>
+</Window>

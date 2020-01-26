@@ -85,9 +85,11 @@ namespace WpfApp1.History
       }
     }
 
-    // **********************************************************************
+        public static object IDataReceiver { get; internal set; }
 
-    public Recorder(IDataReceiver receiver)
+        // **********************************************************************
+
+        public Recorder(IDataReceiver receiver)
     {
       this.Receiver = receiver;
 
@@ -97,11 +99,14 @@ namespace WpfApp1.History
       diffQuotes = new List<Quote>(DiffListBaseSize);
 
       Status = "Ожидание начала записи...";
+           
     }
 
-    // **********************************************************************
+    
 
-    void WriteRecHeader(int id)
+        // **********************************************************************
+
+        void WriteRecHeader(int id)
     {
       WrittenCount++;
       LastDateTime = DateTime.UtcNow;
@@ -116,12 +121,30 @@ namespace WpfApp1.History
 
     void SetError(string text) { Stop(); Status = text; }
 
-    // **********************************************************************
+        // **********************************************************************
 
-    public void Start(string folder, bool writeStock, bool writeOrders,
+
+
+        public void AddStock(Quote[] quotes, Spread spread, Recorder fff)
+        {
+                
+      
+            
+            fff.PutStock( quotes,  spread);
+        }
+        public void AddOrder(long id,int price, int qty,Recorder fff)
+        {
+
+        
+
+            fff.PutOwnOrder(id, price,qty);
+        }
+
+        public void Start(string folder, bool writeStock, bool writeOrders,
       bool writeTrades, bool writeMessages, HashSet<Security> ticks)
     {
-      try
+            
+            try
       {
         lock(pLock)
         {
@@ -271,9 +294,103 @@ namespace WpfApp1.History
       }
     }
 
-    // **********************************************************************
+        void PutOwnOrder(long id, int price,int qty)
+        {
+            OwnOrder order = new OwnOrder(id,price, qty, "tag");
+         
+            if (writeOrders)
+                try
+                {
+                    lock (pLock)
+                    {
+                        WriteRecHeader(orderId);
 
-    void IDataReceiver.PutStock(Quote[] quotes, Spread spread)
+                        bw.Write(order.Id);
+                        bw.Write(order.IsActive ? order.Price : -order.Price);
+                        bw.Write(order.Quantity);
+                    }
+                }
+                catch (Exception e)
+                {
+                    SetError(e.Message);
+                }
+
+          //  Receiver.PutOwnOrder(order);
+        }
+
+        // **********************************************************************
+        void PutStock(Quote[] quotes, Spread spread)
+        {
+            if (writeStock)
+                lock (pLock)
+                {
+                    diffQuotes.Clear();
+
+                    int i = 0;
+
+                    foreach (Quote lq in lastQuotes)
+                    {
+                        while (i < quotes.Length && lq.Price < quotes[i].Price)
+                            diffQuotes.Add(quotes[i++]);
+
+                        if (i < quotes.Length && quotes[i].Price == lq.Price)
+                        {
+                            if (lq.Type != quotes[i].Type || lq.Volume != quotes[i].Volume)
+                                diffQuotes.Add(quotes[i]);
+
+                            i++;
+                        }
+                        else
+                            diffQuotes.Add(new Quote(lq.Price, 0, QuoteType.Unknown));
+                    }
+
+                    while (i < quotes.Length)
+                        diffQuotes.Add(quotes[i++]);
+
+                    if (diffQuotes.Count > 0)
+                        try
+                        {
+                            if (diffQuotes.Count > ushort.MaxValue)
+                                throw new OverflowException("Превышение допустимой глубины стакана");
+
+                            WriteRecHeader(stockId);
+
+                            bw.Write((ushort)diffQuotes.Count);
+
+                            foreach (Quote q in diffQuotes)
+                            {
+                                bw.Write(q.Price);
+
+                                switch (q.Type)
+                                {
+                                    case QuoteType.Ask:
+                                    case QuoteType.BestAsk:
+                                        bw.Write(q.Volume);
+                                        break;
+
+                                    case QuoteType.Bid:
+                                    case QuoteType.BestBid:
+                                        bw.Write(-q.Volume);
+                                        break;
+
+                                    default:
+                                        bw.Write(0);
+                                        break;
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            SetError(e.Message);
+                        }
+
+                    lastQuotes = quotes;
+                }
+
+            //eceiver.PutStock(quotes, spread);
+        }
+
+        void IDataReceiver.PutStock(Quote[] quotes, Spread spread)
     {
       if(writeStock)
         lock(pLock)

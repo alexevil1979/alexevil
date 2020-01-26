@@ -31,7 +31,7 @@ namespace WpfApp1
         public string ClassCode = "SPBFUT";
 
         public int PriceRatio = 1;
-        public int PriceStep = 10;
+        public int PriceStep = 1;
 
         public int Grid1Step = 100;
         public int Grid2Step = 500;

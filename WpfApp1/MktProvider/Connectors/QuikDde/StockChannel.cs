@@ -107,6 +107,7 @@ namespace QuikDdeConnector.Internals
         if(av > 0)
         {
           ask = row;
+
           quotes[row] = new Quote(p, av, QuoteType.Ask);
         }
         else if(bv > 0)

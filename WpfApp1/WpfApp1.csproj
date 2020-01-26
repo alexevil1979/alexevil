@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NDde">
+      <HintPath>..\..\..\..\..\..\bcs\qqq\qscalp_src\bin\Debug\NDde.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -70,6 +73,15 @@
     <Compile Include="etc\ObjItems.cs" />
     <Compile Include="etc\Price.cs" />
     <Compile Include="etc\Types.cs" />
+    <Compile Include="MktProvider\Connectors\Emulator.cs" />
+    <Compile Include="MktProvider\Connectors\QuikDde\DdeChannel.cs" />
+    <Compile Include="MktProvider\Connectors\QuikDde\QuikDde.cs" />
+    <Compile Include="MktProvider\Connectors\QuikDde\StockChannel.cs" />
+    <Compile Include="MktProvider\Connectors\QuikDde\TicksChannel.cs" />
+    <Compile Include="MktProvider\Connectors\QuikDde\XlDde\XlDdeServer.cs" />
+    <Compile Include="MktProvider\Connectors\QuikDde\XlDde\XlTable.cs" />
+    <Compile Include="MktProvider\Connectors\QuikTrader\QuikTrader.cs" />
+    <Compile Include="MktProvider\Connectors\QuikTrader\Trans2Quik.cs" />
     <Compile Include="MktProvider\History\DataFile.cs" />
     <Compile Include="MktProvider\History\Player.cs" />
     <Compile Include="MktProvider\History\Recorder.cs" />
@@ -80,8 +92,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MktProvider\IFaces.cs" />
+    <Compile Include="MktProvider\Loopbacks.cs" />
+    <Compile Include="MktProvider\MemLog.cs" />
     <Compile Include="MktProvider\MktProvider.cs" />
     <Compile Include="MktProvider\SecList.cs" />
+    <Compile Include="MktProvider\Statuses.cs" />
+    <Compile Include="MktProvider\TradeManager\Position.cs" />
+    <Compile Include="MktProvider\TradeManager\tmCallbacks.cs" />
+    <Compile Include="MktProvider\TradeManager\tmStopOrders.cs" />
+    <Compile Include="MktProvider\TradeManager\tmTList.cs" />
+    <Compile Include="MktProvider\TradeManager\tmUser.cs" />
+    <Compile Include="MktProvider\TradeManager\TradeManager.cs" />
+    <Compile Include="MktProvider\TradeManager\Transaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -11,7 +11,7 @@ using System.Threading;
 using WpfApp1.History.Internals;
 
 
-namespace WpfApp1.Market
+namespace WpfApp1.Market.History
 {
   sealed class Player
   {

@@ -13,3 +13,5 @@ C:\Users\1\source\repos\WpfApp1\WpfApp1\obj\Debug\WpfApp1.csproj.GenerateResourc
 C:\Users\1\source\repos\WpfApp1\WpfApp1\obj\Debug\WpfApp1.csproj.CoreCompileInputs.cache
 C:\Users\1\source\repos\WpfApp1\WpfApp1\obj\Debug\WpfApp1.exe
 C:\Users\1\source\repos\WpfApp1\WpfApp1\obj\Debug\WpfApp1.pdb
+C:\Users\1\source\repos\WpfApp1\WpfApp1\bin\Debug\NDde.dll
+C:\Users\1\source\repos\WpfApp1\WpfApp1\obj\Debug\WpfApp1.csproj.CopyComplete

@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 
 
-namespace WpfApp1
+namespace WpfApp1.ObjItems
 
 
 {

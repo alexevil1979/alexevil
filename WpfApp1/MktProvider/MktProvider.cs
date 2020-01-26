@@ -5,8 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-
+using WpfApp1.Market.History;
+using WpfApp1.Market.Internals;
+using WpfApp1.Market.Manager;
 using WpfApp1.History;
+using QuikTraderConnector;
+using QuikDdeConnector;
 
 
 
@@ -19,12 +23,15 @@ namespace WpfApp1.Market
     public static int AskPrice { get; private set; }
     public static int BidPrice { get; private set; }
 
+        public static readonly ProviderStatus StockStatus = new ProviderStatus("Биржевой стакан");
+        public static readonly ProviderStatus TicksStatus = new ProviderStatus("Тики всех сделок");
+        public static readonly TraderStatus TraderStatus = new TraderStatus("Исполнение заявок");
 
 
 
 
 
-    public static event LastPriceHandler LastPriceHandler;
+        public static event LastPriceHandler LastPriceHandler;
 
     public static IDataReceiver Receiver { get; private set; }
 
@@ -33,18 +40,26 @@ namespace WpfApp1.Market
 
     static bool isReplayMode = false;
     static bool isNullTrader = false;
+        public static TradeManager Manager { get; private set; }
+        // **********************************************************************
 
-    // **********************************************************************
+        // **********************************************************************
+        static ITrader traderEmulator = new Emulator();
+        static ITrader nullTrader = new NullTrader();
+        static IConnector quikDde = new QuikDde();
+        static ITrader quikTrader = new QuikTrader();
 
-    // **********************************************************************
+        static IConnector[] connectors = new IConnector[] {
+      quikDde,
+      quikTrader,
+      traderEmulator,
+      nullTrader};
 
- 
 
-  
 
-    // **********************************************************************
+        // **********************************************************************
 
-    static MktProvider()
+        static MktProvider()
     {
     
 
@@ -124,7 +139,12 @@ namespace WpfApp1.Market
                 r = new Recorder(Receiver);
                 Receiver = r;
 
-               
+                foreach (IConnector connector in connectors)
+                {
+                    ITrader t = connector as ITrader;
+                    if (t != null)
+                        t.OwnTradeHandler += r.PutOwnTrade;
+                }
             }
 
 

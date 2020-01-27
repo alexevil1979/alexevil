@@ -150,10 +150,46 @@ namespace WpfApp1.Market
 
             return r;
     }
+        public static Recorder GetRecorder1()
+        {
+            Recorder r = Receiver as Recorder;
+            
+                r = new Recorder(Receiver);
+                Receiver = r;
 
-    // **********************************************************************
+                foreach (IConnector connector in connectors)
+                {
+                    ITrader t = connector as ITrader;
+                    if (t != null)
+                        t.OwnTradeHandler += r.PutOwnTrade;
+                }
+            
 
-    public static void KillRecorder()
+
+            return r;
+        }
+        public static Recorder GetRecorder2()
+        {
+            Recorder r = Receiver as Recorder;
+           
+                r = new Recorder(Receiver);
+                Receiver = r;
+
+                foreach (IConnector connector in connectors)
+                {
+                    ITrader t = connector as ITrader;
+                    if (t != null)
+                        t.OwnTradeHandler += r.PutOwnTrade;
+                }
+            
+
+
+            return r;
+        }
+
+        // **********************************************************************
+
+        public static void KillRecorder()
     {
       Recorder r = Receiver as Recorder;
 

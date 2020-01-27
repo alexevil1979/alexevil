@@ -222,7 +222,7 @@ namespace WpfApp1
         public bool ShowWorkLog = false;
         public WindowBounds WorkLogBounds = new WindowBounds(100, 100, 700, 300);
 
-        public string RecorderFolder = string.Empty;
+        public string RecorderFolder = "C:\\Users\\1\\source\\repos\\WpfApp1\\WpfApp1\\bin\\Debug";
         public WindowLocation RecorderLocation = new WindowLocation(150, 150);
         public WindowLocation PlayerLocation = new WindowLocation(150, 150);
 

@@ -3,13 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp1"
+         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
          Name="form1"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="631.964" Width="1383.473">
     <Grid>
-        <Button Name="star" Content="Записать" HorizontalAlignment="Left" Margin="44,63,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <TextBox x:Name="textb1" HorizontalAlignment="Left" Height="2" Margin="510,262,0,0" TextWrapping="Wrap" Text="тик" VerticalAlignment="Top" Width="8" TextChanged="TextBox_TextChanged" RenderTransformOrigin="0.5,0.5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="18*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button Name="star" Content="Записать" HorizontalAlignment="Left" Margin="36,203,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <TextBox x:Name="textb1" HorizontalAlignment="Left" Height="2" Margin="292.991,262,0,0" TextWrapping="Wrap" Text="тик" VerticalAlignment="Top" Width="8" TextChanged="TextBox_TextChanged" RenderTransformOrigin="0.5,0.5" Grid.Column="1">
             <TextBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleY="-1" ScaleX="-1"/>
@@ -19,8 +24,8 @@
                 </TransformGroup>
             </TextBox.RenderTransform>
         </TextBox>
-        <TextBox Name="folder" HorizontalAlignment="Left" Height="23" Margin="220,10,0,0" TextWrapping="Wrap" Text="папка" VerticalAlignment="Top" Width="385" TextChanged="TextBox_TextChanged_1"/>
-        <Button Name="buttonFolder" Content="Button" HorizontalAlignment="Left" Height="1" Margin="629,9,0,0" VerticalAlignment="Top" Width="3" Click="ButtonFolder_Click" RenderTransformOrigin="0.5,0.5">
+        <TextBox Name="folder" HorizontalAlignment="Left" Height="23" Margin="90,10,0,0" TextWrapping="Wrap" Text="папка" VerticalAlignment="Top" Width="385" TextChanged="TextBox_TextChanged_1" Grid.ColumnSpan="2"/>
+        <Button Name="buttonFolder" Content="Button" HorizontalAlignment="Left" Height="1" Margin="281.991,9,0,0" VerticalAlignment="Top" Width="3" Click="ButtonFolder_Click" RenderTransformOrigin="0.5,0.5" Grid.Column="1">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleY="-1" ScaleX="-1"/>
@@ -30,15 +35,15 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <Label Name="fileName" RenderTransformOrigin="0.287,0.542" Margin="36,264,596.309,118.527" >
+        <Label Name="fileName" RenderTransformOrigin="0.287,0.542" Margin="36,254,862.291,307.055" Grid.ColumnSpan="2" >
 
 
         </Label>
-        <TextBlock  Name="lastDateTime" HorizontalAlignment="Left" Height="32" Margin="36,253,0,0" TextWrapping="Wrap" Text="время записи" VerticalAlignment="Top" Width="467" RenderTransformOrigin="0.507,0.425"/>
-        <TextBlock  Name="count" HorizontalAlignment="Left" Height="19" Margin="34,284,0,0" TextWrapping="Wrap" Text="колво" VerticalAlignment="Top" Width="469"/>
-        <TextBlock  Name="fileSize"  HorizontalAlignment="Left" Height="17" Margin="34,308,0,0" TextWrapping="Wrap" Text="размер" VerticalAlignment="Top" Width="469"/>
-        <TextBlock  Name="status" TextWrapping="Wrap" Text="статус" RenderTransformOrigin="1.777,1.471" Margin="36,330,306.309,63.527"/>
-        <Button  Name="buttonRec" Content="Запись" RenderTransformOrigin="0.306,1.623" Margin="31,305,754.309,108.527">
+        <TextBlock  Name="lastDateTime" HorizontalAlignment="Left" Height="19" Margin="36,301,0,0" TextWrapping="Wrap" Text="время записи" VerticalAlignment="Top" Width="254" RenderTransformOrigin="0.507,0.425" Grid.ColumnSpan="2"/>
+        <TextBlock  Name="count" HorizontalAlignment="Left" Height="19" Margin="35,322,0,0" TextWrapping="Wrap" Text="колво" VerticalAlignment="Top" Width="255" Grid.ColumnSpan="2"/>
+        <TextBlock  Name="fileSize"  HorizontalAlignment="Left" Height="17" Margin="35,343,0,0" TextWrapping="Wrap" Text="размер" VerticalAlignment="Top" Width="256" Grid.ColumnSpan="2"/>
+        <TextBlock  Name="status" TextWrapping="Wrap" Text="статус" RenderTransformOrigin="1.777,1.471" Margin="35,362,9.745,209.055"/>
+        <Button  Name="buttonRec" Content="Запись" RenderTransformOrigin="0.306,1.623" Margin="31,227,186.009,186.891">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleY="-1" ScaleX="-1"/>
@@ -48,7 +53,7 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <Grid Margin="44,154,498.309,155.527">
+        <Grid Margin="23,420,42.745,97.055" RenderTransformOrigin="0.516,0.509">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -62,13 +67,87 @@
             </Grid.RowDefinitions>
 
             <CheckBox Grid.Row="0" Grid.Column="0" x:Name="writeStock" Content="Биржевой стакан" IsChecked="True" />
-            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="writeTicks" Content="Ленту сделок" IsChecked="True" />
-            <CheckBox Grid.Row="1" Grid.Column="0" x:Name="writeOrders" Content="Свои заявки" IsChecked="True" />
-            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="writeTrades" Content="Свои сделки" IsChecked="True" />
-            <CheckBox Grid.Row="2" Grid.Column="0" x:Name="writeGuide" Content="Тики поводыря" IsChecked="True" />
-            <CheckBox Grid.Row="2" Grid.Column="1" x:Name="writeTone" Content="Тики настроения" IsChecked="True" />
-            <CheckBox Grid.Row="3" Grid.Column="0" x:Name="writeMsgs" Content="Сообщения" IsChecked="True" />
+            <CheckBox Grid.Row="0" x:Name="writeTicks" Content="Ленту сделок" IsChecked="True" Margin="161,-1,27.527,56.727" RenderTransformOrigin="0.5,0.5" >
+                <CheckBox.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="-1" ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </CheckBox.RenderTransform>
+            </CheckBox>
+            <CheckBox Grid.Row="1" Grid.Column="0" x:Name="writeOrders" Content="Свои заявки" IsChecked="True" Margin="0,0.927,69.527,17.218" Grid.RowSpan="2" />
+            <CheckBox Grid.Row="1" x:Name="writeTrades" Content="Свои сделки" IsChecked="True" Margin="113,0.273,125.527,56.455" />
+            <CheckBox Grid.Row="1" Grid.Column="0" x:Name="writeGuide" Content="Тики поводыря" IsChecked="True" Margin="0,56.273,182.509,0" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="2" Height="1" VerticalAlignment="Top" />
+            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="writeTone" Content="Тики настроения" IsChecked="True" Margin="0.073,22.309,80.364,0.382" RenderTransformOrigin="0.5,0.5" >
+                <CheckBox.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </CheckBox.RenderTransform>
+            </CheckBox>
+            <CheckBox Grid.Row="2" Grid.Column="0" x:Name="writeMsgs" Content="Сообщения" IsChecked="True" Margin="0,56.545,243.527,0.182" RenderTransformOrigin="0.5,0.5" />
         </Grid>
-        <TextBox x:Name="textb2" HorizontalAlignment="Left" Height="320" Margin="508,63,0,0" TextWrapping="Wrap" Text="стакан" VerticalAlignment="Top" Width="243" TextChanged="TextBox_TextChanged" RenderTransformOrigin="1.515,0.454"/>
+        <TextBox x:Name="textb2" HorizontalAlignment="Left" Height="524" Margin="296,69,0,0" TextWrapping="Wrap" Text="стакан" VerticalAlignment="Top" Width="185" TextChanged="TextBox_TextChanged" RenderTransformOrigin="1.515,0.454" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="textb3" HorizontalAlignment="Left" Height="524" Margin="108.255,71,0,0" TextWrapping="Wrap" Text="ордера" VerticalAlignment="Top" Width="185" TextChanged="TextBox_TextChanged" RenderTransformOrigin="1.515,0.454" Grid.Column="1"/>
+        <Label Content="Папка" HorizontalAlignment="Left" Height="23" Margin="34,10,0,0" VerticalAlignment="Top" Width="51"/>
+        <Label Content="Имя файла" HorizontalAlignment="Left" Height="23" Margin="36,231,0,0" VerticalAlignment="Top" Width="87"/>
+        <RadioButton Name="radio1" Content="1 файл" HorizontalAlignment="Left" Height="22" Margin="134,203,0,0" VerticalAlignment="Top" Width="81"/>
+        <RadioButton Name="radio2" Content="2 файла" HorizontalAlignment="Left" Height="22" Margin="209,203,0,0" VerticalAlignment="Top" Width="81"/>
+        <Button Grid.Column="1" 
+                    FontFamily="Webdings" Content="&#x34;" ToolTip="Запустить"
+                    Name="buttonStart" IsEnabled="False" IsDefault="True" Margin="394.255,189,563.291,378.055" />
+
+        <ToggleButton Grid.Column="1" 
+                    FontFamily="Webdings" Content="&#x3b;" ToolTip="Приостановить / продолжить"
+                    Name="buttonPause"  IsEnabled="False" Margin="446.255,189,511.291,378.055" />
+
+        <Button Grid.Column="1" 
+                    FontFamily="Webdings" Content="&#x3c;" ToolTip="Остановить"
+                    Name="buttonStop"  IsEnabled="False" Margin="485.255,189,472.291,378.055" />
+
+        <Button Grid.Column="1"
+                    Content="+" ToolTip="Добавить файлы для воспроизведения"
+                    Name="buttonAdd"  Margin="719.255,190,233.291,378.055" Click="ButtonAdd_Click" />
+
+        <Button Grid.Column="1" 
+                    Content="-" ToolTip="Удалить выбраные файлы из списка"
+                    Name="buttonRmv"  IsEnabled="False" Margin="796.255,191,140.291,378.055" />
+        <CheckBox Grid.Column="1" Name="readStock" Content="Стакан"  Margin="576.255,231,348.291,339.055" RenderTransformOrigin="0.756,0.313" />
+        <CheckBox Grid.Column="1" Name="readOwns" Content="Свои заявки и сделки"  Margin="394.255,231,438.291,339.055" RenderTransformOrigin="3.084,-0.638" />
+
+
+        <ListView Name="fileList" Margin="394.255,73,140.291,421.055"  Grid.Column="1">
+            <ListView.Resources>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="ToolTip" Value="{Binding Path=Info}" />
+                </Style>
+
+                <DataTemplate x:Key="state">
+                    <Border ClipToBounds="True" BorderThickness="1" BorderBrush="#FF919191" CornerRadius="3">
+                        <Grid>
+                            <Rectangle Fill="Gainsboro">
+                                <Rectangle.RenderTransform>
+                                    <ScaleTransform ScaleX="{Binding Path=Progress}" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                            <TextBlock HorizontalAlignment="Center" Text="{Binding Path=State}" Margin="-1" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListView.Resources>
+
+            <ListView.View>
+                <GridView AllowsColumnReorder="False">
+                    <GridViewColumn Width="220" DisplayMemberBinding="{Binding Path=FileName}" Header="Имя файла" />
+                    <GridViewColumn Width="175" CellTemplate="{StaticResource state}" Header="Статус" />
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

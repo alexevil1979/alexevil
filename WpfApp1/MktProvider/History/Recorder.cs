@@ -13,10 +13,12 @@ namespace WpfApp1.History
 {
   sealed class Recorder : IDataReceiver
   {
-    // **********************************************************************
+        // **********************************************************************
 
-    const string FileNameFormat = "TradeHistory {0:yyyy-MM-dd@HHmmss}.{1}";
-    const int DiffListBaseSize = 100;
+        const string FileNameFormat0 = "TradeHistoryAll {0:yyyy-MM-dd@HHmmss}.{1}";
+        const string FileNameFormat1 = "TradeHistoryStock {0:yyyy-MM-dd@HHmmss}.{1}";
+        const string FileNameFormat2 = "TradeHistoryOrder {0:yyyy-MM-dd@HHmmss}.{1}";
+        const int DiffListBaseSize = 100;
 
     string _status;
 
@@ -141,7 +143,7 @@ namespace WpfApp1.History
         }
 
         public void Start(string folder, bool writeStock, bool writeOrders,
-      bool writeTrades, bool writeMessages, HashSet<Security> ticks)
+      bool writeTrades, bool writeMessages, HashSet<Security> ticks,int rk)
     {
             
             try
@@ -185,10 +187,20 @@ namespace WpfApp1.History
           // ---------------------------------------------------
 
           baseDateTime = DateTime.UtcNow;
+                    if (rk == 0) { 
+          FileName = string.Format(FileNameFormat0, baseDateTime.ToLocalTime(), cfg.HistoryFileExt);
+                    }
+                    if (rk == 1)
+                    {
+                        FileName = string.Format(FileNameFormat1, baseDateTime.ToLocalTime(), cfg.HistoryFileExt);
+                    }
+                    if (rk == 2)
+                    {
+                        FileName = string.Format(FileNameFormat2, baseDateTime.ToLocalTime(), cfg.HistoryFileExt);
+                    }
 
-          FileName = string.Format(FileNameFormat, baseDateTime.ToLocalTime(), cfg.HistoryFileExt);
 
-          fs = new FileStream(folder + "\\" + FileName, FileMode.Create, FileAccess.Write);
+                    fs = new FileStream(folder + "\\" + FileName, FileMode.Create, FileAccess.Write);
           bw = new BinaryWriter(new DeflateStream(fs, CompressionMode.Compress));
 
           DataFile.WriteHeader(bw, new DataFileHeader(

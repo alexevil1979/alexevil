@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -24,6 +25,7 @@ namespace WpfApp1
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     /// 
+   
     sealed class NullReceiver : IDataReceiver
     {
         void IDataReceiver.PutMessage(Message msg) { }
@@ -37,9 +39,13 @@ namespace WpfApp1
         const string dtFmt = "HH:mm:ss.fff";
 
         Recorder recorder;
+        Recorder recorder1;
+        Recorder recorder2;
         int lastCount;
+        int rkk=0;
 
-
+        public Thread myThreadStock;
+        public Thread myThreadOrders;
 
         public MainWindow()
         {
@@ -49,16 +55,30 @@ namespace WpfApp1
               ? cfg.u.RecorderFolder : cfg.AsmPath.Remove(cfg.AsmPath.Length - 1);
 
             lastCount = -1;
+
             recorder = MktProvider.GetRecorder();
+            recorder1 = MktProvider.GetRecorder1();
+            recorder2 = MktProvider.GetRecorder2();
+
             Refresh();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
-
+            if (radio1.IsChecked== true) {
+                rkk = 1;
             if (recorder.IsRecording)
             {
+
+                if (writeStock.IsChecked == true)
+                {
+                    myThreadStock.Abort();
+                }
+                if (writeOrders.IsChecked == true)
+                {
+                    myThreadOrders.Abort();
+                }
                 recorder.Stop();
                 Refresh();
             }
@@ -84,36 +104,171 @@ namespace WpfApp1
                   writeOrders.IsChecked == true,
                   writeTrades.IsChecked == true,
                   writeMsgs.IsChecked == true,
-                  ticks);
+                  ticks,0);
 
                 Refresh();
+                if (writeStock.IsChecked == true){
+                    // создаем стакан
+                    myThreadStock = new Thread(new ThreadStart(CountStock));
+                myThreadStock.Start(); // запускаем поток на 100 стаканов 2 раза в секунду.
+                }
+                if (writeOrders.IsChecked == true)
+                {
+                    // создаем ордера
+                    myThreadOrders = new Thread(new ThreadStart(CountOrders));
+                    myThreadOrders.Start(); // запускаем поток на 100 стаканов 2 раза в секунду.
+                }
+            }
+            }
+            else
+            {
+                rkk = 2;
+                if (recorder1.IsRecording)
+                {
+
+                    if (writeStock.IsChecked == true)
+                    {
+                        myThreadStock.Abort();
+                    }
+                    if (writeOrders.IsChecked == true)
+                    {
+                        myThreadOrders.Abort();
+                    }
+                    recorder1.Stop();
+                    Refresh();
+                }
+                else
+                {
+                    lastCount = -1;
+
+                    HashSet<Security> ticks = new HashSet<Security>();
+
+                    if (writeTicks.IsChecked == true)
+                        ticks.Add(new Security(cfg.u.SecCode, cfg.u.ClassCode));
+
+                    if (writeGuide.IsChecked == true)
+                        foreach (GuideSource src in cfg.u.GuideSources)
+                            ticks.Add(new Security(src.SecCode, src.ClassCode));
+
+                    if (writeTone.IsChecked == true)
+                        foreach (ToneSource src in cfg.u.ToneSources)
+                            ticks.Add(new Security(src.SecCode, src.ClassCode));
+
+                    recorder1.Start(folder.Text,
+                      writeStock.IsChecked == true,
+                      writeOrders.IsChecked == true,
+                      writeTrades.IsChecked == true,
+                      writeMsgs.IsChecked == true,
+                      ticks,1);
+
+                    Refresh();
+                    if (writeStock.IsChecked == true)
+                    {
+                        // создаем стакан
+                        myThreadStock = new Thread(new ThreadStart(CountStock));
+                        myThreadStock.Start(); // запускаем поток на 100 стаканов 2 раза в секунду.
+                    }
+
+                }
+
+                if (recorder2.IsRecording)
+                {
+
+                    if (writeStock.IsChecked == true)
+                    {
+                        myThreadStock.Abort();
+                    }
+                    if (writeOrders.IsChecked == true)
+                    {
+                        myThreadOrders.Abort();
+                    }
+                    recorder2.Stop();
+                    Refresh();
+                }
+                else
+                {
+                    lastCount = -1;
+
+                    HashSet<Security> ticks = new HashSet<Security>();
+
+                    if (writeTicks.IsChecked == true)
+                        ticks.Add(new Security(cfg.u.SecCode, cfg.u.ClassCode));
+
+                    if (writeGuide.IsChecked == true)
+                        foreach (GuideSource src in cfg.u.GuideSources)
+                            ticks.Add(new Security(src.SecCode, src.ClassCode));
+
+                    if (writeTone.IsChecked == true)
+                        foreach (ToneSource src in cfg.u.ToneSources)
+                            ticks.Add(new Security(src.SecCode, src.ClassCode));
+
+                    recorder2.Start(folder.Text,
+                    writeStock.IsChecked == true,
+                    writeOrders.IsChecked == true,
+                    writeTrades.IsChecked == true,
+                    writeMsgs.IsChecked == true,
+                    ticks,2);
+                    Refresh();
+                    if (writeOrders.IsChecked == true)
+                    {
+                        // создаем ордера
+                        myThreadOrders = new Thread(new ThreadStart(CountOrders));
+                        myThreadOrders.Start(); // запускаем поток на 100 стаканов 2 раза в секунду.
+                    }
+                }
+
+
+
             }
             // создаем стакан
-            Thread myThread = new Thread(new ThreadStart(Count));
-            myThread.Start(); // запускаем поток на 100 стаканов 2 раза в секунду.
+
         }
 
-        public  void Count()
+        public  void CountStock()
         {
+           int  rk = rkk;
             Random rnd = new Random();
             int start = rnd.Next(500, 1000);
-            int lq = crstak(start);
+            int lq = crstak(start, rk);
             for (int kk = 0; kk < 100; kk++)
             {
-                lq = crstak(lq);
-                crorder(lq);
+                lq = crstak(lq, rk);
                 Thread.Sleep(500);
             }
         }
 
-        public void crorder(int pric)
+        public void CountOrders()
+        {
+            Random rnd = new Random();
+            int rk = rkk;
+            Application.Current.Dispatcher.InvokeAsync(() => { textb3.Text = "Ордера"; });
+            for (int kk = 0; kk < 100; kk++)
+            {
+                int start = rnd.Next(500, 1000);
+                crorder(start,rk);
+                Thread.Sleep(500);
+            }
+
+        }
+        public void crorder(int pric, int rk)
         { 
             long id = 123123;
             Random rnd = new Random();
             int qty = rnd.Next(1, 20);
-            recorder.AddOrder(id,pric,qty, recorder);
-        }
-        public int crstak (int start)
+            if (rk == 1)
+            {
+                recorder.AddOrder(id, pric, qty, recorder);
+            }else
+            {
+                recorder2.AddOrder(id, pric, qty, recorder);
+            }
+            Application.Current.Dispatcher.InvokeAsync(() => { textb3.Text = textb3.Text + "\n" + pric.ToString() + " " + qty.ToString() ; });
+
+
+
+            }
+
+            public int crstak (int start, int rk)
             {
             //создание стакана
             Random rnd = new Random();
@@ -167,8 +322,8 @@ namespace WpfApp1
                 Trace.WriteLine("стакан перевернут");
             }
             quotes[ask].Type = QuoteType.BestAsk;
-            quotes[bid].Type = QuoteType.BestBid;
-            Application.Current.Dispatcher.InvokeAsync(() => { textb2.Text = "" ; });
+            quotes[ask+1].Type = QuoteType.BestBid;
+            Application.Current.Dispatcher.InvokeAsync(() => { textb2.Text = "Стакан" ; });
 
             foreach (var item in quotes)
             {
@@ -178,7 +333,14 @@ namespace WpfApp1
            
             }
             //запись стакана
-            recorder.AddStock(quotes, new Spread(quotes[ask].Price, quotes[bid].Price), recorder);
+            if (rk == 1)
+            {
+                recorder.AddStock(quotes, new Spread(quotes[ask].Price, quotes[bid].Price), recorder);
+            }
+            else
+            {
+                recorder1.AddStock(quotes, new Spread(quotes[ask].Price, quotes[bid].Price), recorder);
+            }
             return lq;
             
         }
@@ -211,31 +373,95 @@ namespace WpfApp1
                 fileSize.Text = ((double)recorder.FileSize / 1024).ToString("N", cfg.BaseCulture);
             }
 
-            if (recorder.StatusUpdated)
+            if (radio1.IsChecked == true)
             {
-                fileName.Content = recorder.FileName == null ? ". . ." : recorder.FileName;
-
-                status.Text = recorder.Status;
-
-                if (recorder.IsRecording)
+                if (recorder.StatusUpdated)
                 {
-                    folder.IsEnabled = false;
+                    fileName.Content = recorder.FileName == null ? ". . ." : recorder.FileName;
 
-                    star.Content = "Остановить";
-                    buttonRec.Content = "Остановить";
+                    status.Text = recorder.Status;
+
+                    if (recorder.IsRecording)
+                    {
+                        folder.IsEnabled = false;
+
+                        star.Content = "Остановить";
+                        buttonRec.Content = "Остановить";
+                    }
+                    else
+                    {
+                        folder.IsEnabled = true;
+                        star.Content = "Начать";
+                        buttonRec.Content = "Начать";
+                    }
                 }
-                else
+            }
+            else
+            {
+
+                if (recorder1.StatusUpdated)
                 {
-                    folder.IsEnabled = true;
-                    star.Content = "Начать";
-                    buttonRec.Content = "Начать";
+                    fileName.Content = recorder1.FileName == null ? ". . ." : recorder1.FileName;
+
+                    status.Text = recorder1.Status;
+
+                    if (recorder1.IsRecording)
+                    {
+                        folder.IsEnabled = false;
+
+                        star.Content = "Остановить";
+                        buttonRec.Content = "Остановить";
+                    }
+                    else
+                    {
+                        folder.IsEnabled = true;
+                        star.Content = "Начать";
+                        buttonRec.Content = "Начать";
+                    }
                 }
+
             }
         }
 
         private void ButtonFolder_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+        void StopPlay(object sender = null, RoutedEventArgs e = null)
+        {
+          //  foreach (PlayerWrapper pw in players)
+            //    pw.Player.Stop();
+
+          //  dateTimePointer.Text = null;
+
+            buttonStop.IsEnabled = false;
+
+            buttonPause.IsEnabled = false;
+            buttonPause.IsChecked = false;
+
+            Refresh();
+        }
+
+        private void ButtonAdd_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog fd = new System.Windows.Forms.OpenFileDialog();
+
+            fd.Filter = "История торгов QScalp (*." + cfg.HistoryFileExt + ")|*." + cfg.HistoryFileExt;
+            fd.RestoreDirectory = true;
+            fd.InitialDirectory = cfg.u.RecorderFolder;
+            fd.Title = "Добавить файлы для воспроизведения";
+            fd.Multiselect = true;
+
+            if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                StopPlay();
+
+                
+            }
+            //else if (players.Count == 0)
+          //      MktProvider.SetMode(true, readOwns.IsChecked == true);
+
+            Focus();
         }
     }
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
-using WpfApp1.History.Internals;
+using WpfApp1.Market.History.Internals;
 
 namespace WpfApp1.History
 {

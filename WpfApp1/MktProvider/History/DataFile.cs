@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace WpfApp1.History.Internals
+namespace WpfApp1.Market.History.Internals
 {
   // ************************************************************************
 

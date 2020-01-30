@@ -18,6 +18,24 @@ using WpfApp1.Market;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
+using WpfApp1.Market.History.Internals;
+using WpfApp1.Windows;
+
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Threading;
+
+using WpfApp1.Market;
+using WpfApp1.Market.History;
+using WpfApp1.Market.History.Internals;
+
+
 
 namespace WpfApp1
 {
@@ -25,7 +43,140 @@ namespace WpfApp1
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     /// 
-   
+
+    sealed class PlayerWrapper : INotifyPropertyChanged
+    {
+        // --------------------------------------------------------------
+
+
+        DateTime lastDateTime;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public readonly Player Player;
+
+        // --------------------------------------------------------------
+
+        public PlayerWrapper(string fn) { Player = new Player(fn); }
+
+        // --------------------------------------------------------------
+
+        public string Info
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder(128);
+                sb.AppendLine(Player.FilePath);
+
+                sb.Append("Записан: ");
+                sb.AppendLine(Player.FileHeader.BaseDateTime.ToLocalTime()
+                  .ToString(PlayerWindow.DateTimeFmt));
+
+                sb.Append("Программа: ");
+                sb.AppendLine(Player.FileHeader.RecorderName);
+
+                sb.Append("Размер файла: ");
+                sb.Append((Player.FileSize / 1024).ToString("N", cfg.BaseCulture));
+                sb.AppendLine(" кб");
+
+                sb.AppendLine();
+                sb.Append("Данные:");
+
+                for (int i = 0; i < Player.FileHeader.StreamsCount; i++)
+                {
+                    Player.Stream s = Player[i];
+
+                    sb.AppendLine();
+                    sb.Append("\x2219 ");
+
+                    switch (s.Header.Type)
+                    {
+                        case StreamType.Stock:
+                            sb.Append("Стакан");
+                            break;
+                        case StreamType.Ticks:
+                            sb.Append("Тики сделок");
+                            break;
+                        case StreamType.Orders:
+                            sb.Append("Свои заявки");
+                            break;
+                        case StreamType.Trades:
+                            sb.Append("Свои сделки");
+                            break;
+                        case StreamType.Messages:
+                            sb.Append("Сообщения");
+                            break;
+                        default:
+                            sb.Append(s.Header.Type.ToString());
+                            break;
+                    }
+
+                    if (s.Header.Type != StreamType.Messages)
+                    {
+                        sb.Append(" ");
+                        sb.Append(s.Header.Security.ToString());
+
+                        if (s.Header.Type == StreamType.Stock)
+                        {
+                            sb.Append(" (шаг ");
+                            sb.Append((double)s.Header.PriceStep / s.Header.PriceRatio);
+                            sb.Append(" пт)");
+                        }
+                    }
+                }
+
+                return sb.ToString();
+            }
+        }
+
+        // --------------------------------------------------------------
+
+        public string FileName { get { return Player.FileName; } }
+
+        // --------------------------------------------------------------
+
+
+
+        public double Progress
+        {
+            get
+            {
+                long size = Player.FileSize;
+                return size > 0 ? (double)Player.FilePosition / size : 0;
+            }
+        }
+
+        // --------------------------------------------------------------
+
+        public string State
+        {
+            get
+            {
+                return Player.IsPlaying ? Player.CurrentDateTime.ToLocalTime()
+                  .ToString(PlayerWindow.DateTimeFmt) : Player.Status;
+            }
+        }
+
+        // --------------------------------------------------------------
+
+        public void Refresh()
+        {
+            if (PropertyChanged != null)
+            {
+                DateTime lastDateTime = Player.CurrentDateTime;
+
+                if (Player.StatusUpdated || this.lastDateTime != lastDateTime)
+                {
+                    this.lastDateTime = lastDateTime;
+
+                    PropertyChanged(this, new PropertyChangedEventArgs("State"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("Progress"));
+                }
+            }
+        }
+
+        // --------------------------------------------------------------
+    }
+
     sealed class NullReceiver : IDataReceiver
     {
         void IDataReceiver.PutMessage(Message msg) { }
@@ -46,11 +197,11 @@ namespace WpfApp1
 
         public Thread myThreadStock;
         public Thread myThreadOrders;
-
+        public static MainWindow Instance { get; private set; } // тут будет форма
         public MainWindow()
         {
             InitializeComponent();
-
+            Instance = this;
             folder.Text = cfg.u.RecorderFolder.Length > 0
               ? cfg.u.RecorderFolder : cfg.AsmPath.Remove(cfg.AsmPath.Length - 1);
 
@@ -61,6 +212,26 @@ namespace WpfApp1
             recorder2 = MktProvider.GetRecorder2();
 
             Refresh();
+            players = new ObservableCollection<PlayerWrapper>();
+            players.CollectionChanged += players_CollectionChanged;
+
+            fileList.ItemsSource = players;
+
+            Loaded += delegate
+            {
+                Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                  new Action(() => { ButtonFolder_Click(null, null); }));
+            };
+        }
+        void players_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (players.Count > 0)
+                buttonStart.IsEnabled = true;
+            else
+            {
+                buttonStart.IsEnabled = false;
+                buttonPause.IsEnabled = false;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -237,11 +408,20 @@ namespace WpfApp1
             }
         }
 
+        public static void Res(String sss)
+        {
+            Application.Current.Dispatcher.InvokeAsync(() => { MainWindow.Instance.textb2.Text ="Стакан воспроизведение:\n"+ sss; });
+        }
+        public static void Res1(String sss)
+        {
+            Application.Current.Dispatcher.InvokeAsync(() => { MainWindow.Instance.textb3.Text = "Ордера воспроизведение:\n" + sss; });
+        }
+
         public void CountOrders()
         {
             Random rnd = new Random();
             int rk = rkk;
-            Application.Current.Dispatcher.InvokeAsync(() => { textb3.Text = "Ордера"; });
+            Application.Current.Dispatcher.InvokeAsync(() => { textb3.Text = "Запись Ордера"; });
             for (int kk = 0; kk < 100; kk++)
             {
                 int start = rnd.Next(500, 1000);
@@ -260,9 +440,9 @@ namespace WpfApp1
                 recorder.AddOrder(id, pric, qty, recorder);
             }else
             {
-                recorder2.AddOrder(id, pric, qty, recorder);
+                recorder2.AddOrder(id, pric, qty, recorder2);
             }
-            Application.Current.Dispatcher.InvokeAsync(() => { textb3.Text = textb3.Text + "\n" + pric.ToString() + " " + qty.ToString() ; });
+            Application.Current.Dispatcher.InvokeAsync(() => { textb3.Text = "\n" + pric.ToString() + " " + qty.ToString() ; });
 
 
 
@@ -323,7 +503,7 @@ namespace WpfApp1
             }
             quotes[ask].Type = QuoteType.BestAsk;
             quotes[ask+1].Type = QuoteType.BestBid;
-            Application.Current.Dispatcher.InvokeAsync(() => { textb2.Text = "Стакан" ; });
+            Application.Current.Dispatcher.InvokeAsync(() => { textb2.Text = "Запись Стакан" ; });
 
             foreach (var item in quotes)
             {
@@ -339,7 +519,7 @@ namespace WpfApp1
             }
             else
             {
-                recorder1.AddStock(quotes, new Spread(quotes[ask].Price, quotes[bid].Price), recorder);
+                recorder1.AddStock(quotes, new Spread(quotes[ask].Price, quotes[bid].Price), recorder1);
             }
             return lq;
             
@@ -441,7 +621,8 @@ namespace WpfApp1
 
             Refresh();
         }
-
+        ObservableCollection<PlayerWrapper> players;
+        public event Action<UserSettings35> ConfigChecker;
         private void ButtonAdd_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.OpenFileDialog fd = new System.Windows.Forms.OpenFileDialog();
@@ -451,18 +632,162 @@ namespace WpfApp1
             fd.InitialDirectory = cfg.u.RecorderFolder;
             fd.Title = "Добавить файлы для воспроизведения";
             fd.Multiselect = true;
-
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 StopPlay();
 
-                
-            }
-            //else if (players.Count == 0)
-          //      MktProvider.SetMode(true, readOwns.IsChecked == true);
+                foreach (string fn in fd.FileNames)
+                {
+                    bool unique = true;
 
-            Focus();
+                    foreach (PlayerWrapper epw in players)
+                        if (epw.Player.FilePath == fn)
+                        {
+                            unique = false;
+                            break;
+                        }
+
+                    if (unique)
+                    {
+                        PlayerWrapper pw = new PlayerWrapper(fn);
+
+                        if (players.Count == 0)
+                        {
+                            DateTime localDateTime = pw.Player.FileHeader.BaseDateTime.ToLocalTime();
+
+                            dateYear.Content = localDateTime.Year.ToString();
+                            dateMonth.Content = localDateTime.Month;
+                            dateDay.Content = localDateTime.Day;
+                            timeHour.Content = localDateTime.Hour;
+                            timeMin.Content = localDateTime.Minute;
+                            timeSec.Content = localDateTime.Second;
+
+                            bool stock = false;
+                            bool ticks = false;
+                            bool orders = false;
+                            bool trades = false;
+                            bool messages = false;
+
+                            bool stockExist = false;
+
+                            for (int i = 0; i < pw.Player.FileHeader.StreamsCount; i++)
+                            {
+                                Player.Stream s = pw.Player[i];
+
+                                switch (s.Header.Type)
+                                {
+                                    case StreamType.Stock:
+                                        stock = true;
+
+                                        if (stockExist)
+                                            s.IsActive = false;
+                                        {
+                                            stockExist = true;
+
+                                            if ((cfg.u.SecCode != s.Header.Security.SecCode
+                                              || cfg.u.ClassCode != s.Header.Security.ClassCode
+                                              || cfg.u.PriceRatio != s.Header.PriceRatio
+                                              || cfg.u.PriceStep != s.Header.PriceStep)
+                                              && MessageBox.Show(this, "В добавляемом файле обнаружены данные биржевого стакана\n"
+                                              + s.Header.Security + " (шаг " + ((double)s.Header.PriceStep / s.Header.PriceRatio)
+                                              + " пт). Настроить привод на этот инструмент?", cfg.ProgName, MessageBoxButton.OKCancel,
+                                              MessageBoxImage.Question) == MessageBoxResult.OK)
+                                            {
+                                                UserSettings35 old = cfg.u.Clone();
+
+                                                cfg.u.SecCode = s.Header.Security.SecCode;
+                                                cfg.u.ClassCode = s.Header.Security.ClassCode;
+                                                cfg.u.PriceRatio = s.Header.PriceRatio;
+                                                cfg.u.PriceStep = s.Header.PriceStep;
+
+                                                cfg.Reinit();
+
+                                                if (ConfigChecker != null)
+                                                    ConfigChecker(old);
+                                            }
+                                        }
+
+                                        break;
+
+                                    case StreamType.Ticks: ticks = true; break;
+                                    case StreamType.Orders: orders = true; break;
+                                    case StreamType.Trades: trades = true; break;
+                                    case StreamType.Messages: messages = true; break;
+                                }
+                            }
+
+                            readStock.IsChecked = stock;
+                          //  readTicks.IsChecked = ticks;
+                            readOwns.IsChecked = orders || trades;
+                        //    readMsgs.IsChecked = messages;
+
+                            players.Add(pw);
+                        }
+                        else
+                        {
+                            SetActiveStreams(pw);
+                            players.Add(pw);
+                        }
+                    }
+                }
+            }
+            else if (players.Count == 0)
+                MktProvider.SetMode(true, readOwns.IsChecked == true);
         }
+
+        void SetActiveStreams(PlayerWrapper pw)
+        {
+            for (int i = 0; i < pw.Player.FileHeader.StreamsCount; i++)
+            {
+                Player.Stream s = pw.Player[i];
+
+                switch (s.Header.Type)
+                {
+                    case StreamType.Stock: s.IsActive = readStock.IsChecked == true; break;
+                  //  case StreamType.Ticks: s.IsActive = readTicks.IsChecked == true; break;
+                    case StreamType.Orders: s.IsActive = readOwns.IsChecked == true; break;
+                    case StreamType.Trades: s.IsActive = readOwns.IsChecked == true; break;
+                  //  case StreamType.Messages: s.IsActive = readMsgs.IsChecked == true; break;
+                }
+            }
+        }
+        private void FileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void ButtonStart_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime utcNow = DateTime.UtcNow;
+
+            DateTime startDateTime = new DateTime(int.Parse(dateYear.Content.ToString()),
+              int.Parse(dateMonth.Content.ToString()), int.Parse(dateDay.Content.ToString()), int.Parse(timeHour.Content.ToString()),
+              int.Parse(timeMin.Content.ToString()), int.Parse(timeSec.Content.ToString()), DateTimeKind.Local)
+              .ToUniversalTime();
+
+            bool startPast = true;
+
+            foreach (PlayerWrapper pw in players)
+                if (pw.Player.FileHeader.BaseDateTime < startDateTime)
+                {
+                    if (startPast)
+                    {
+                        startPast = false;
+                        pw.Player.Start(utcNow, startDateTime);
+                    }
+                }
+                else
+                    pw.Player.Start(utcNow, startDateTime);
+
+            buttonStop.IsEnabled = true;
+
+            buttonPause.IsEnabled = true;
+            buttonPause.IsChecked = false;
+
+            Refresh();
+        }
+
+      
     }
 
 

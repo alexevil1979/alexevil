@@ -8,7 +8,19 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading;
 
-using WpfApp1.History.Internals;
+
+
+using WpfApp1.Market.History.Internals;
+using System.Collections.ObjectModel;
+
+
+using System.Windows;
+using WpfApp1;
+
+
+
+
+
 
 
 namespace WpfApp1.Market.History
@@ -337,7 +349,7 @@ namespace WpfApp1.Market.History
     void StockReader(Stream stream)
     {
       int n = br.ReadUInt16();
-
+            String rrr = "";
       for(int i = 0; i < n; i++)
       {
         int p = br.ReadInt32();
@@ -387,11 +399,14 @@ namespace WpfApp1.Market.History
             quotes[i].Volume = -kvp.Value;
             quotes[i].Type = QuoteType.Bid;
           }
+               rrr=  rrr+  " "+quotes[i].Price.ToString() + " " + quotes[i].Volume.ToString() + " " + quotes[i].Type.ToString()+ "\n";          
+          
+                    i--;
+                  
+                }
+                MainWindow.Res(rrr);
 
-          i--;
-        }
-
-        if(StockHandler != null)
+                if (StockHandler != null)
           StockHandler(quotes, spread);
       }
     }
@@ -418,10 +433,14 @@ namespace WpfApp1.Market.History
       long id = br.ReadInt64();
       int p = br.ReadInt32();
       int q = br.ReadInt32();
-
-     // if(stream != null && stream.IsActive)
-     //   MktProvider.Receiver.PutOwnOrder(p < 0
-      //    ? new OwnOrder(id, -p) : new OwnOrder(id, p, q, null));
+            String rrr = "";
+            if (stream != null && stream.IsActive)
+            {
+                rrr = rrr + " " + p.ToString() + " " + q.ToString() + " " + id.ToString() + "\n";
+                MainWindow.Res1(rrr);
+            }
+           
+        
     }
 
     // **********************************************************************

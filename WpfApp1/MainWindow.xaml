@@ -96,19 +96,19 @@
         <TextBox x:Name="textb3" HorizontalAlignment="Left" Height="524" Margin="108.255,71,0,0" TextWrapping="Wrap" Text="ордера" VerticalAlignment="Top" Width="185" TextChanged="TextBox_TextChanged" RenderTransformOrigin="1.515,0.454" Grid.Column="1"/>
         <Label Content="Папка" HorizontalAlignment="Left" Height="23" Margin="34,10,0,0" VerticalAlignment="Top" Width="51"/>
         <Label Content="Имя файла" HorizontalAlignment="Left" Height="23" Margin="36,231,0,0" VerticalAlignment="Top" Width="87"/>
-        <RadioButton Name="radio1" Content="1 файл" HorizontalAlignment="Left" Height="22" Margin="134,203,0,0" VerticalAlignment="Top" Width="81"/>
+        <RadioButton Name="radio1" Content="1 файл" HorizontalAlignment="Left" Height="22" Margin="134,203,0,0" VerticalAlignment="Top" Width="81"  IsChecked="True" />
         <RadioButton Name="radio2" Content="2 файла" HorizontalAlignment="Left" Height="22" Margin="209,203,0,0" VerticalAlignment="Top" Width="81"/>
         <Button Grid.Column="1" 
                     FontFamily="Webdings" Content="&#x34;" ToolTip="Запустить"
-                    Name="buttonStart" IsEnabled="False" IsDefault="True" Margin="394.255,189,563.291,378.055" />
+                    Name="buttonStart" IsEnabled="False" IsDefault="True" Margin="394.255,189,563.291,378.055" RenderTransformOrigin="0.5,0.503" Click="ButtonStart_Click" />
 
         <ToggleButton Grid.Column="1" 
                     FontFamily="Webdings" Content="&#x3b;" ToolTip="Приостановить / продолжить"
-                    Name="buttonPause"  IsEnabled="False" Margin="446.255,189,511.291,378.055" />
+                    Name="buttonPause"  IsEnabled="False" Margin="444.255,189,513.291,378.055" />
 
         <Button Grid.Column="1" 
                     FontFamily="Webdings" Content="&#x3c;" ToolTip="Остановить"
-                    Name="buttonStop"  IsEnabled="False" Margin="485.255,189,472.291,378.055" />
+                    Name="buttonStop"  IsEnabled="False" Margin="485.255,189,472.291,378.055" Click="ButtonStop_Click" />
 
         <Button Grid.Column="1"
                     Content="+" ToolTip="Добавить файлы для воспроизведения"
@@ -117,11 +117,32 @@
         <Button Grid.Column="1" 
                     Content="-" ToolTip="Удалить выбраные файлы из списка"
                     Name="buttonRmv"  IsEnabled="False" Margin="796.255,191,140.291,378.055" />
-        <CheckBox Grid.Column="1" Name="readStock" Content="Стакан"  Margin="576.255,231,348.291,339.055" RenderTransformOrigin="0.756,0.313" />
-        <CheckBox Grid.Column="1" Name="readOwns" Content="Свои заявки и сделки"  Margin="394.255,231,438.291,339.055" RenderTransformOrigin="3.084,-0.638" />
+        <CheckBox Grid.Column="1" Name="readStock" Content="Стакан"  Margin="576.255,231,348.291,339.055" RenderTransformOrigin="0.756,0.313" IsChecked="True"  />
+        <CheckBox Grid.Column="1" Name="readOwns" Content="Свои заявки и сделки"  Margin="394.255,231,438.291,339.055" RenderTransformOrigin="3.084,-0.638"  IsChecked="True" />
+        <Grid Margin="394.255,269,206.291,262.055" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="1.4*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
+            <Label Grid.Column="0" Content="Дата" />
+            <Label Grid.Column="1" x:Name="dateDay" />
+            <Label Grid.Column="2" x:Name="dateMonth"  />
+            <Label Grid.Column="3" x:Name="dateYear"  />
 
-        <ListView Name="fileList" Margin="394.255,73,140.291,421.055"  Grid.Column="1">
+            <Label Grid.Column="4" Content="Время" />
+            <Label Grid.Column="5" x:Name="timeHour"  />
+            <Label Grid.Column="6" x:Name="timeMin" />
+            <Label Grid.Column="7" x:Name="timeSec" />
+        </Grid>
+
+        <ListView Name="fileList" Margin="394.255,73,140.291,421.055"  Grid.Column="1" SelectionChanged="FileList_SelectionChanged">
             <ListView.Resources>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
